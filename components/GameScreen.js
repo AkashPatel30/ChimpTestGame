@@ -18,18 +18,21 @@ const GameScreen = () => {
   const [wrongAttempts, setWrongAttempts] = useState(0);
   const [totalLives, setTotalLives] = useState(3);
   const [currentLives, setCurrentLives] = useState(totalLives);
+  const [isInputEnabled, setIsInputEnabled] = useState(false);
 
   useEffect(() => {
     generateNewNumber();
   }, [level]);
 
   const generateNewNumber = () => {
+    setIsInputEnabled(false); // Disable input initially
     const digits = level;
     const newNumber = generateRandomNumber(digits);
     setCurrentNumber(newNumber);
     setTimeout(() => {
       setCurNumber(newNumber);
       setCurrentNumber(null);
+      setIsInputEnabled(true); // Enable input after the number disappears
     }, level * 1000); // Display the number for 'level' seconds
   };
 
@@ -72,8 +75,13 @@ const GameScreen = () => {
         keyboardType="numeric"
         value={userInput}
         onChangeText={(text) => setUserInput(text)}
+        editable={isInputEnabled} // Enable/disable TextInput based on isInputEnabled
       />
-      <TouchableOpacity style={styles.button} onPress={checkUserInput}>
+      <TouchableOpacity
+        style={[styles.button, isInputEnabled ? styles.buttonEnabled : styles.buttonDisabled]}
+        onPress={checkUserInput}
+        disabled={!isInputEnabled} // Disable button when input is disabled
+      >
         <Text style={styles.buttonText}>Submit</Text>
       </TouchableOpacity>
     </View>
@@ -112,6 +120,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'green',
     padding: 10,
     borderRadius: 5,
+  },
+  buttonEnabled: {
+    backgroundColor: 'green',
+  },
+  buttonDisabled: {
+    backgroundColor: 'gray',
   },
   buttonText: {
     color: 'white',
